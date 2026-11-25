@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dashboard</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect x='1' y='1' width='14' height='14' rx='3' fill='%23274c77'/><path d='M4 8l3 3 5-6' stroke='white' stroke-width='2' fill='none'/></svg>">
+<style>
+  :root { --bar: #f4f5f7; --line: #d9dde3; --accent: #274c77; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body { font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: #222; display: flex; flex-direction: column; }
+  header { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 8px 12px; background: var(--bar); border-bottom: 1px solid var(--line); }
+  header h1 { font-size: 17px; margin: 0 12px 0 0; color: var(--accent); }
+  header .spacer { flex: 1; }
+  button, input[type=date] { font: inherit; padding: 4px 10px; border: 1px solid var(--line); border-radius: 6px; background: white; color: #222; }
+  button:hover { border-color: #9aa5b1; }
+  button.primary { background: var(--accent); color: white; border-color: var(--accent); }
+  #status { font-size: 13px; color: #666; min-width: 110px; text-align: right; }
+  #status.ok { color: #2d6a4f; } #status.dirty { color: #8a6d00; } #status.error { color: #b00020; }
+  .notice { padding: 8px 14px; font-size: 14px; border-bottom: 1px solid var(--line); }
+  #pastBanner { background: #fff4d6; }
+  #conflict { background: #fde2e4; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  #conflict[hidden], #pastBanner[hidden] { display: none; }
+  #editor { flex: 1; overflow: hidden; }
+  #editor .cm-editor { height: 100%; }
+  #editor .cm-scroller { font-family: inherit; line-height: 1.6; }
+  #editor .cm-content { max-width: 900px; padding: 12px 8px 40vh; }
+  .cm-editor.cm-focused { outline: none; }
+  body.past #editor .cm-editor { background: #fffdf5; }
+  .cm-task-box { margin: 0 4px 0 0; vertical-align: -2px; width: 16px; height: 16px; cursor: pointer; }
+  .cm-task-done { color: #8a8f98; text-decoration: line-through; text-decoration-color: #b8bcc4; }
+  .cm-foldGutter span { color: #9aa5b1; padding: 0 4px; }
+  .cm-activeLine { background: #f3f6fa; }
+  body.past .cm-activeLine { background: transparent; }
+  dialog { border: 1px solid var(--line); border-radius: 10px; padding: 18px 20px; max-width: 460px; width: 92vw; }
+  dialog label { display: block; margin: 10px 0 2px; font-size: 13px; color: #555; }
+  dialog input { width: 100%; font: inherit; padding: 5px 8px; border: 1px solid var(--line); border-radius: 6px; }
+  dialog .row { display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px; }
+  dialog p { font-size: 13px; color: #555; }
+  #setMsg { color: #b00020; min-height: 1em; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Dashboard</h1>
+  <button id="prevDay" title="Previous day">&#9664;</button>
+  <input type="date" id="datePick" title="View the dashboard as of a past day">
+  <button id="nextDay" title="Next day">&#9654;</button>
+  <button id="todayBtn" class="primary" hidden>Back to today</button>
+  <span class="spacer"></span>
+  <span id="status">Starting…</span>
+  <button id="settingsBtn" title="Settings">Settings</button>
+</header>
+<div id="pastBanner" class="notice" hidden></div>
+<div id="conflict" class="notice" hidden>
+  <span>The dashboard was changed on another device since this one loaded it.</span>
+  <button id="conflictLoad">Load the other version (my text is copied to the clipboard)</button>
+  <button id="conflictKeep">Keep my version and overwrite</button>
+</div>
+<div id="editor"></div>
+
+<dialog id="settings">
+  <form id="settingsForm">
+    <strong>Connect to GitHub</strong>
+    <p>The dashboard is stored in a private GitHub repository. Use a fine-grained personal access token limited to that repository, with "Contents" set to read and write. The token is kept only in this browser.</p>
+    <label for="setOwner">GitHub account</label>
+    <input id="setOwner" required>
+    <label for="setRepo">Data repository</label>
+    <input id="setRepo" required>
+    <label for="setToken">Access token</label>
+    <input id="setToken" type="password" autocomplete="off" required>
+    <p id="setMsg"></p>
+    <div class="row">
+      <button type="button" id="setForget">Remove token from this device</button>
+      <button type="button" onclick="this.closest('dialog').close()">Cancel</button>
+      <button type="submit" class="primary">Connect</button>
+    </div>
+  </form>
+</dialog>
+
+<script src="app.js"></script>
+</body>
+</html>
